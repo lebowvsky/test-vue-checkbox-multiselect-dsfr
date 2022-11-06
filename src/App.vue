@@ -21,10 +21,18 @@
       <DsfrCheckbox label="ALL" name="allcustom" v-model="allCustomChecked" @change="onAllCustomChange" />
 
       <div class="check-wrapper" v-for="(data, index) in datas" :key="`${data}${index}`">
-        <input type="checkbox" name="youpi" id="youpi" :value="data" v-model="customResult" @change="checkboxChange" />
+        <input
+          type="checkbox"
+          name="youpi"
+          id="youpi"
+          :value="data"
+          v-model="customResult"
+          @change="($event: Event) => checkboxChange($event?.target as HTMLInputElement)"
+        />
       </div>
 
       <p>{{ customResult }}</p>
+      <strong>{{ arrayGeneral }}</strong>
     </section>
   </div>
 </template>
@@ -57,19 +65,27 @@ const youpi = (event: string, index: number) => {
     modelValue.value[index] = event;
   }
 };
-
+// CUSTOM CHECKBOXES LOGIC
+const arrayGeneral = ref<string[]>(["lalala", "louloulou"]);
 const customResult = ref<string[]>([]);
 const allCustomChecked = ref<boolean>(false);
+
 const onAllCustomChange = () => {
   if (!allCustomChecked.value) {
     customResult.value = [];
+    datas.forEach((elt) => {
+      arrayGeneral.value = arrayGeneral.value.filter((item) => item !== elt);
+    });
   }
   if (allCustomChecked.value) {
     customResult.value = [...datas];
+    arrayGeneral.value = [...arrayGeneral.value, ...datas];
   }
 };
-const checkboxChange = () => {
+const checkboxChange = (event: HTMLInputElement) => {
   allCustomChecked.value = false;
+  if (event.checked) arrayGeneral.value = [...arrayGeneral.value, event.value];
+  if (!event.checked) arrayGeneral.value = arrayGeneral.value.filter((elt) => elt !== event.value);
 };
 </script>
 
